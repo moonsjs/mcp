@@ -1,0 +1,44 @@
+{
+  "name": "@moonsjs/mcp",
+  "version": "0.1.4",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moonsjs/mcp.git"
+  },
+  "homepage": "https://github.com/moonsjs/docs",
+  "bugs": {
+    "url": "https://github.com/moonsjs/mcp/issues"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "bin": {
+    "moons-mcp": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "bun": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "prepack": "bun run build",
+    "build": "rm -rf dist && tsc -p tsconfig.json --emitDeclarationOnly && bun build src/index.ts src/cli.ts --outdir dist --target node --format esm --splitting --sourcemap=external --external @moonsjs/cli --external '@moonsjs/cli/*' --external @moonsjs/core --external '@moonsjs/core/*' --external @modelcontextprotocol/sdk --external '@modelcontextprotocol/sdk/*' --external zod",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "@moonsjs/cli": "^0.1.0",
+    "@moonsjs/core": "^0.1.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.3",
+    "typescript": "^7.0.2"
+  }
+}
