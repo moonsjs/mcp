@@ -66,6 +66,24 @@ export function createMcpServer(options: ToolsetOptions): McpServer {
   );
 
   server.registerTool(
+    "audit",
+    {
+      description:
+        "Security audit: serverFn inventory, env() access map, cookie flags, CSP, and a dist/client scan for env-like secrets (Addendum H).",
+    },
+    () => guard(() => tools.audit()),
+  );
+
+  server.registerTool(
+    "run_typegen",
+    {
+      description:
+        "Run typegen: writes .moons/routes.d.ts + .moons/context.d.ts for the app in cwd.",
+    },
+    () => guard(() => tools.runTypegen()),
+  );
+
+  server.registerTool(
     "explain_error",
     {
       description:

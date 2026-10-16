@@ -66,7 +66,7 @@ test("searchDocs: fetcher disuntik + hasil di-cache sekali", async () => {
   expect(calls).toBe(1);
 });
 
-test("MCP end-to-end in-memory: 5 tool terdaftar + list_routes + explain_error", async () => {
+test("MCP end-to-end in-memory: 7 tool terdaftar + list_routes + explain_error", async () => {
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   const server = createMcpServer({
     cwd: join(fixtures, "app"),
@@ -79,12 +79,18 @@ test("MCP end-to-end in-memory: 5 tool terdaftar + list_routes + explain_error",
 
   const listed = await client.listTools();
   expect(listed.tools.map((tool) => tool.name).sort()).toEqual([
+    "audit",
     "explain_error",
     "get_fn_registry",
     "list_routes",
     "run_check",
+    "run_typegen",
     "search_docs",
   ]);
+
+  const typegen = await client.callTool({ name: "run_typegen", arguments: {} });
+  const typegenContent = typegen.content as Array<{ type: string; text?: string }>;
+  expect(typegenContent[0]?.text ?? "").toContain('"ok": true');
 
   const result = await client.callTool({ name: "list_routes", arguments: {} });
   const content = result.content as Array<{ type: string; text?: string }>;

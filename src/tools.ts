@@ -2,7 +2,10 @@ import { MOONS_ERROR_CODES, findErrorEntry, type ErrorCatalogEntry } from "@moon
 import {
   collectFns,
   collectRoutes,
+  executeAudit,
   executeCheck,
+  runTypegen,
+  type AuditJson,
   type CheckJson,
   type FnsJson,
   type RoutesJson,
@@ -92,6 +95,10 @@ export interface Toolset {
   searchDocs: (query: string) => Promise<SearchDocsResult>;
   /** Addendum B.6: kode error §15 → pemicu + saran. */
   explainError: (code: string) => Promise<ExplainErrorResult>;
+  /** Addendum H: audit keamanan (RPC/env/cookie/CSP/dist) machine-readable. */
+  audit: () => Promise<AuditJson>;
+  /** Addendum H: jalankan typegen (`.moons/*.d.ts`). */
+  runTypegen: () => Promise<{ ok: true; outDir: string }>;
 }
 
 export interface ToolsetOptions {
@@ -157,6 +164,11 @@ export function createTools(options: ToolsetOptions): Toolset {
         ...(entry === undefined ? {} : { entry }),
         validCodes: [...MOONS_ERROR_CODES],
       };
+    },
+    audit: () => executeAudit(options.cwd, { env: process.env }),
+    runTypegen: async () => {
+      await runTypegen(options.cwd);
+      return { ok: true as const, outDir: ".moons" };
     },
   };
 }
