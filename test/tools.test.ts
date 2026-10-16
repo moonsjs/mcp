@@ -132,9 +132,9 @@ test("L.4 scaffoldRoute: page + loader dibuat; tolak timpa & segmen invalid", as
   expect(content).toContain("useLoaderData");
   expect(content).toContain("export const loader");
 
-  await expect(tools.scaffoldRoute({ route: "orders/[id]" })).rejects.toThrow("sudah ada");
-  await expect(tools.scaffoldRoute({ route: "../evil" })).rejects.toThrow();
-  await expect(tools.scaffoldRoute({ route: "" })).rejects.toThrow();
+  await expect(tools.scaffoldRoute({ route: "orders/[id]" })).rejects.toThrow("already exists");
+  await expect(tools.scaffoldRoute({ route: "../evil" })).rejects.toThrow("invalid route segment");
+  await expect(tools.scaffoldRoute({ route: "" })).rejects.toThrow("must not be empty");
 
   const api = await tools.scaffoldRoute({ route: "webhooks/stripe", kind: "api" });
   expect(api.file).toBe("src/api/webhooks/stripe.ts");
@@ -148,6 +148,7 @@ test("L.4 tailDevLogs: missing → exists false; isi → N baris terakhir", asyn
   const missing = await tools.tailDevLogs(10);
   expect(missing.exists).toBe(false);
   expect(missing.file).toBe(".moons/dev.log");
+  expect(missing.text).toContain("no dev log yet");
 
   mkdirSync(join(cwd, ".moons"), { recursive: true });
   writeFileSync(join(cwd, ".moons", "dev.log"), "a\nb\nc\n");

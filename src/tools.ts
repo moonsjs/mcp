@@ -63,7 +63,7 @@ async function defaultLoadContext(): Promise<{ source: string; text: string }> {
     }
   }
   throw new Error(
-    `gagal mengambil konteks dari ${CONTEXT_URLS.join(" dan ")}: ${String(lastError)}`,
+    `failed to load context from ${CONTEXT_URLS.join(" and ")}: ${String(lastError)}`,
   );
 }
 
@@ -194,18 +194,18 @@ export function createTools(options: ToolsetOptions): Toolset {
     scaffoldRoute: async (input) => {
       const kind = input.kind ?? "page";
       if (kind !== "page" && kind !== "api") {
-        throw new Error(`kind tidak dikenal: ${String(kind)}`);
+        throw new Error(`unknown kind: ${String(kind)}`);
       }
       const route = input.route.trim().replace(/^\/+|\/+$/g, "");
       if (route.length === 0) {
-        throw new Error("`route` tidak boleh kosong (contoh: orders/[id])");
+        throw new Error("`route` must not be empty (example: orders/[id])");
       }
       for (const segment of route.split("/")) {
         if (segment.length === 0 || segment === "." || segment === "..") {
-          throw new Error(`segmen route tidak valid: \`${segment}\``);
+          throw new Error(`invalid route segment: \`${segment}\``);
         }
         if (/[\\<>:"|?*]/.test(segment)) {
-          throw new Error(`segmen route memuat karakter terlarang: \`${segment}\``);
+          throw new Error(`route segment contains forbidden characters: \`${segment}\``);
         }
       }
       const dir = kind === "page" ? "src/routes" : "src/api";
@@ -213,7 +213,7 @@ export function createTools(options: ToolsetOptions): Toolset {
       const file = join(options.cwd, dir, `${route}${ext}`);
       const relativeFile = relative(options.cwd, file).split(sep).join("/");
       if (existsSync(file)) {
-        throw new Error(`file sudah ada: ${relativeFile} (tidak menimpa)`);
+        throw new Error(`file already exists: ${relativeFile} (not overwriting)`);
       }
       mkdirSync(dirname(file), { recursive: true });
       const content =
@@ -231,7 +231,7 @@ export function createTools(options: ToolsetOptions): Toolset {
           file: ".moons/dev.log",
           lines: clamped,
           exists: false,
-          text: "belum ada log dev — jalankan `moons dev` dulu",
+          text: "no dev log yet — run `moons dev` first",
         };
       }
       const text = readFileSync(file, "utf8");
@@ -250,7 +250,7 @@ export function createTools(options: ToolsetOptions): Toolset {
 function renderPageRoute(route: string, withLoader: boolean): string {
   if (!withLoader) {
     return [
-      `// Route: /${route} — dibuat oleh MCP scaffold_route.`,
+      `// Route: /${route} — created by MCP scaffold_route.`,
       "export default function Page() {",
       `  return <p>/${route}</p>;`,
       "}",
@@ -258,7 +258,7 @@ function renderPageRoute(route: string, withLoader: boolean): string {
     ].join("\n");
   }
   return [
-    `// Route: /${route} — dibuat oleh MCP scaffold_route.`,
+    `// Route: /${route} — created by MCP scaffold_route.`,
     'import { useLoaderData } from "@moonsjs/react";',
     "",
     "export const loader = async () => ({ items: [] as string[] });",
@@ -274,7 +274,7 @@ function renderPageRoute(route: string, withLoader: boolean): string {
 /** Template endpoint API (Addendum D.1): export method + params. */
 function renderApiRoute(route: string): string {
   return [
-    `// Endpoint: /api/${route} — dibuat oleh MCP scaffold_route.`,
+    `// Endpoint: /api/${route} — created by MCP scaffold_route.`,
     'import type { ApiHandlerArgs } from "@moonsjs/server";',
     "",
     "export async function GET({ params }: ApiHandlerArgs): Promise<Response> {",
