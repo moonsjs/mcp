@@ -14,10 +14,10 @@ import { dirname, join } from "node:path";
 /** Sumber teks konteks framework (default: lokal dulu, lalu GitHub raw). */
 export type ContextFetcher = () => Promise<string>;
 
-export const CONTEXT_URL =
-  "https://raw.githubusercontent.com/moonsjs/docs/main/docs/ai/CONTEXT.md";
+ export const CONTEXT_URL =
+  "https://raw.githubusercontent.com/moonsjs/docs/main/ai/CONTEXT.md";
 
-/** Rantai fallback remote: situs docs → pages.dev → GitHub raw (mirror). */
+/** Rantai fallback remote: situs docs → pages.dev → GitHub raw (repo docs). */
 export const CONTEXT_URLS: readonly string[] = [
   "https://docs.devmoon.net/raw/ai/CONTEXT.md",
   "https://moonsjs-docs.pages.dev/raw/ai/CONTEXT.md",
