@@ -84,6 +84,42 @@ export function createMcpServer(options: ToolsetOptions): McpServer {
   );
 
   server.registerTool(
+    "scaffold_route",
+    {
+      description:
+        "Create a route file following Moons conventions: page → src/routes/<route>.tsx (default export + optional loader), api → src/api/<route>.ts (GET handler). Never overwrites existing files (Addendum L.4).",
+      inputSchema: {
+        route: z.string().describe('route path without extension, e.g. "orders/[id]"'),
+        kind: z.enum(["page", "api"]).optional().describe("default: page"),
+        loader: z
+          .boolean()
+          .optional()
+          .describe("page only: include a sample loader + useLoaderData"),
+      },
+    },
+    ({ route, kind, loader }) =>
+      guard(() =>
+        tools.scaffoldRoute({
+          route,
+          ...(kind === undefined ? {} : { kind }),
+          ...(loader === undefined ? {} : { loader }),
+        }),
+      ),
+  );
+
+  server.registerTool(
+    "tail_dev_logs",
+    {
+      description:
+        "Tail the CLI-managed dev log (.moons/dev.log written by `moons dev`); default 50 lines, max 500 (Addendum L.4).",
+      inputSchema: {
+        lines: z.number().int().min(1).max(500).optional().describe("default 50"),
+      },
+    },
+    ({ lines }) => guard(() => tools.tailDevLogs(lines ?? 50)),
+  );
+
+  server.registerTool(
     "explain_error",
     {
       description:

@@ -1,7 +1,9 @@
 import { expect, test } from "bun:test";
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { join } from "node:path";
 import { createMcpServer } from "../src/server";
 import { createTools, localContextPath, searchMarkdown, CONTEXT_URLS } from "../src/tools";
 
@@ -66,7 +68,7 @@ test("searchDocs: fetcher disuntik + hasil di-cache sekali", async () => {
   expect(calls).toBe(1);
 });
 
-test("MCP end-to-end in-memory: 7 tool terdaftar + list_routes + explain_error", async () => {
+test("MCP end-to-end in-memory: 9 tool terdaftar + list_routes + explain_error", async () => {
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   const server = createMcpServer({
     cwd: join(fixtures, "app"),
@@ -85,7 +87,9 @@ test("MCP end-to-end in-memory: 7 tool terdaftar + list_routes + explain_error",
     "list_routes",
     "run_check",
     "run_typegen",
+    "scaffold_route",
     "search_docs",
+    "tail_dev_logs",
   ]);
 
   const typegen = await client.callTool({ name: "run_typegen", arguments: {} });
@@ -112,4 +116,42 @@ test("MCP end-to-end in-memory: 7 tool terdaftar + list_routes + explain_error",
 
   await client.close();
   await server.close();
+});
+
+function tempApp(): string {
+  return mkdtempSync(join(tmpdir(), "moons-mcp-tools-"));
+}
+
+test("L.4 scaffoldRoute: page + loader dibuat; tolak timpa & segmen invalid", async () => {
+  const cwd = tempApp();
+  const tools = createTools({ cwd });
+
+  const created = await tools.scaffoldRoute({ route: "/orders/[id]", loader: true });
+  expect(created.file).toBe("src/routes/orders/[id].tsx");
+  const content = readFileSync(join(cwd, created.file), "utf8");
+  expect(content).toContain("useLoaderData");
+  expect(content).toContain("export const loader");
+
+  await expect(tools.scaffoldRoute({ route: "orders/[id]" })).rejects.toThrow("sudah ada");
+  await expect(tools.scaffoldRoute({ route: "../evil" })).rejects.toThrow();
+  await expect(tools.scaffoldRoute({ route: "" })).rejects.toThrow();
+
+  const api = await tools.scaffoldRoute({ route: "webhooks/stripe", kind: "api" });
+  expect(api.file).toBe("src/api/webhooks/stripe.ts");
+  expect(readFileSync(join(cwd, api.file), "utf8")).toContain("ApiHandlerArgs");
+});
+
+test("L.4 tailDevLogs: missing → exists false; isi → N baris terakhir", async () => {
+  const cwd = tempApp();
+  const tools = createTools({ cwd });
+
+  const missing = await tools.tailDevLogs(10);
+  expect(missing.exists).toBe(false);
+  expect(missing.file).toBe(".moons/dev.log");
+
+  mkdirSync(join(cwd, ".moons"), { recursive: true });
+  writeFileSync(join(cwd, ".moons", "dev.log"), "a\nb\nc\n");
+  const tail = await tools.tailDevLogs(2);
+  expect(tail.exists).toBe(true);
+  expect(tail.text).toBe("b\nc");
 });

@@ -10,9 +10,9 @@ import {
   type FnsJson,
   type RoutesJson,
 } from "@moonsjs/cli";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
-import { dirname, join } from "node:path";
+import { dirname, join, relative, sep } from "node:path";
 
 /** Sumber teks konteks framework (default: lokal dulu, lalu GitHub raw). */
 export type ContextFetcher = () => Promise<string>;
@@ -99,6 +99,27 @@ export interface Toolset {
   audit: () => Promise<AuditJson>;
   /** Addendum H: jalankan typegen (`.moons/*.d.ts`). */
   runTypegen: () => Promise<{ ok: true; outDir: string }>;
+  /** Addendum L.4: buat file route mengikuti konvensi §11 (tanpa menimpa). */
+  scaffoldRoute: (input: {
+    route: string;
+    kind?: "page" | "api";
+    loader?: boolean;
+  }) => Promise<ScaffoldRouteResult>;
+  /** Addendum L.4: baca N baris terakhir `.moons/dev.log` (dikelola `moons dev`). */
+  tailDevLogs: (lines: number) => Promise<TailDevLogsResult>;
+}
+
+export interface ScaffoldRouteResult {
+  file: string;
+  kind: "page" | "api";
+  created: true;
+}
+
+export interface TailDevLogsResult {
+  file: string;
+  lines: number;
+  exists: boolean;
+  text: string;
 }
 
 export interface ToolsetOptions {
@@ -170,5 +191,95 @@ export function createTools(options: ToolsetOptions): Toolset {
       await runTypegen(options.cwd);
       return { ok: true as const, outDir: ".moons" };
     },
+    scaffoldRoute: async (input) => {
+      const kind = input.kind ?? "page";
+      if (kind !== "page" && kind !== "api") {
+        throw new Error(`kind tidak dikenal: ${String(kind)}`);
+      }
+      const route = input.route.trim().replace(/^\/+|\/+$/g, "");
+      if (route.length === 0) {
+        throw new Error("`route` tidak boleh kosong (contoh: orders/[id])");
+      }
+      for (const segment of route.split("/")) {
+        if (segment.length === 0 || segment === "." || segment === "..") {
+          throw new Error(`segmen route tidak valid: \`${segment}\``);
+        }
+        if (/[\\<>:"|?*]/.test(segment)) {
+          throw new Error(`segmen route memuat karakter terlarang: \`${segment}\``);
+        }
+      }
+      const dir = kind === "page" ? "src/routes" : "src/api";
+      const ext = kind === "page" ? ".tsx" : ".ts";
+      const file = join(options.cwd, dir, `${route}${ext}`);
+      const relativeFile = relative(options.cwd, file).split(sep).join("/");
+      if (existsSync(file)) {
+        throw new Error(`file sudah ada: ${relativeFile} (tidak menimpa)`);
+      }
+      mkdirSync(dirname(file), { recursive: true });
+      const content =
+        kind === "page"
+          ? renderPageRoute(route, input.loader === true)
+          : renderApiRoute(route);
+      writeFileSync(file, content);
+      return { file: relativeFile, kind, created: true as const };
+    },
+    tailDevLogs: async (lines) => {
+      const clamped = Math.min(Math.max(Math.trunc(lines), 1), 500);
+      const file = join(options.cwd, ".moons", "dev.log");
+      if (!existsSync(file)) {
+        return {
+          file: ".moons/dev.log",
+          lines: clamped,
+          exists: false,
+          text: "belum ada log dev — jalankan `moons dev` dulu",
+        };
+      }
+      const text = readFileSync(file, "utf8");
+      const all = text.length === 0 ? [] : text.replace(/\n$/, "").split("\n");
+      return {
+        file: ".moons/dev.log",
+        lines: clamped,
+        exists: true,
+        text: all.slice(-clamped).join("\n"),
+      };
+    },
   };
+}
+
+/** Template route page (§11): default export + loader opsional. */
+function renderPageRoute(route: string, withLoader: boolean): string {
+  if (!withLoader) {
+    return [
+      `// Route: /${route} — dibuat oleh MCP scaffold_route.`,
+      "export default function Page() {",
+      `  return <p>/${route}</p>;`,
+      "}",
+      "",
+    ].join("\n");
+  }
+  return [
+    `// Route: /${route} — dibuat oleh MCP scaffold_route.`,
+    'import { useLoaderData } from "@moonsjs/react";',
+    "",
+    "export const loader = async () => ({ items: [] as string[] });",
+    "",
+    "export default function Page() {",
+    "  const data = useLoaderData<typeof loader>();",
+    "  return <p>{data.items.length} item</p>;",
+    "}",
+    "",
+  ].join("\n");
+}
+
+/** Template endpoint API (Addendum D.1): export method + params. */
+function renderApiRoute(route: string): string {
+  return [
+    `// Endpoint: /api/${route} — dibuat oleh MCP scaffold_route.`,
+    'import type { ApiHandlerArgs } from "@moonsjs/server";',
+    "",
+    "export async function GET({ params }: ApiHandlerArgs): Promise<Response> {",
+    "  return Response.json({ ok: true, params });",
+    "}",
+    "",
+  ].join("\n");
 }
