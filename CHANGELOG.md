@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.4 — 2026-10-17
+- chore: wave alignment (deps ^0.5.0)
+
 ## v0.2.3 — 2026-10-17
 - fix: MCP_VERSION constant now tracks the package version (0.2.2 shipped with 0.2.1)
 
