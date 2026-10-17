@@ -75,6 +75,15 @@ export function createMcpServer(options: ToolsetOptions): McpServer {
   );
 
   server.registerTool(
+    "diagnose",
+    {
+      description:
+        "Diagnose the app: moons.config.ts loads, @moonsjs/* versions, duplicate/nested framework copies, peer packages, typegen freshness, and port availability (Addendum P).",
+    },
+    () => guard(() => tools.diagnose()),
+  );
+
+  server.registerTool(
     "run_typegen",
     {
       description:

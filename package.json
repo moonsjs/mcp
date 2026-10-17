@@ -1,6 +1,6 @@
 {
   "name": "@moonsjs/mcp",
-  "version": "0.1.11",
+  "version": "0.2.0",
   "type": "module",
   "license": "MIT",
   "sideEffects": false,
@@ -33,8 +33,8 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.26.0",
-    "@moonsjs/cli": "^0.2.0",
-    "@moonsjs/core": "^0.2.0",
+    "@moonsjs/cli": "^0.3.0",
+    "@moonsjs/core": "^0.3.0",
     "zod": "^4.6.7"
   },
   "devDependencies": {

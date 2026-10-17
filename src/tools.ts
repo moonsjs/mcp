@@ -4,9 +4,11 @@ import {
   collectRoutes,
   executeAudit,
   executeCheck,
+  executeDoctor,
   runTypegen,
   type AuditJson,
   type CheckJson,
+  type DoctorJson,
   type FnsJson,
   type RoutesJson,
 } from "@moonsjs/cli";
@@ -111,6 +113,8 @@ export interface Toolset {
   explainError: (code: string) => Promise<ExplainErrorResult>;
   /** Addendum H: audit keamanan (RPC/env/cookie/CSP/dist) machine-readable. */
   audit: () => Promise<AuditJson>;
+  /** Addendum P: diagnosa project (config, deps/duplikat, typegen, port). */
+  diagnose: () => Promise<DoctorJson>;
   /** Addendum H: jalankan typegen (`.moons/*.d.ts`). */
   runTypegen: () => Promise<{ ok: true; outDir: string }>;
   /** Addendum L.4: buat file route mengikuti konvensi §11 (tanpa menimpa). */
@@ -201,6 +205,7 @@ export function createTools(options: ToolsetOptions): Toolset {
       };
     },
     audit: () => executeAudit(options.cwd, { env: process.env }),
+    diagnose: () => executeDoctor(options.cwd),
     runTypegen: async () => {
       await runTypegen(options.cwd);
       return { ok: true as const, outDir: ".moons" };

@@ -68,7 +68,16 @@ test("searchDocs: fetcher disuntik + hasil di-cache sekali", async () => {
   expect(calls).toBe(1);
 });
 
-test("MCP end-to-end in-memory: 9 tool terdaftar + list_routes + explain_error", async () => {
+test("diagnose: mengembalikan checks + counts pada fixture app", async () => {
+  const app = createTools({ cwd: join(fixtures, "app"), fetchContext: async () => "" });
+  const result = await app.diagnose();
+  expect(typeof result.moonsVersion).toBe("string");
+  expect(Array.isArray(result.checks)).toBe(true);
+  expect(result.checks.some((check) => check.id === "deps.duplicates")).toBe(true);
+  expect(result.counts.pass + result.counts.warn + result.counts.fail).toBe(result.checks.length);
+});
+
+test("MCP end-to-end in-memory: 10 tool terdaftar + list_routes + explain_error", async () => {
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   const server = createMcpServer({
     cwd: join(fixtures, "app"),
@@ -82,6 +91,7 @@ test("MCP end-to-end in-memory: 9 tool terdaftar + list_routes + explain_error",
   const listed = await client.listTools();
   expect(listed.tools.map((tool) => tool.name).sort()).toEqual([
     "audit",
+    "diagnose",
     "explain_error",
     "get_fn_registry",
     "list_routes",
