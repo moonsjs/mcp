@@ -6,8 +6,8 @@
       "name": "@moonsjs/mcp",
       "dependencies": {
         "@modelcontextprotocol/sdk": "^1.26.0",
-        "@moonsjs/cli": "^0.3.0",
-        "@moonsjs/core": "^0.3.0",
+        "@moonsjs/cli": "^0.4.0",
+        "@moonsjs/core": "^0.4.0",
         "zod": "^4.6.7",
       },
       "devDependencies": {
@@ -29,15 +29,15 @@
 
     "@modelcontextprotocol/sdk": ["@modelcontextprotocol/sdk@1.32.1", "", { "dependencies": { "@hono/node-server": "^1.19.9 || ^2.0.5", "ajv": "^8.17.1", "ajv-formats": "^3.0.1", "content-type": "^1.0.5", "cors": "^2.8.5", "cross-spawn": "^7.0.5", "eventsource": "^3.0.2", "eventsource-parser": "^3.0.0", "express": "^5.2.1", "express-rate-limit": "^8.2.1", "hono": "^4.11.4", "jose": "^6.1.3", "json-schema-typed": "^8.0.2", "pkce-challenge": "^5.0.0", "raw-body": "^3.0.0", "zod": "^3.25 || ^4.0", "zod-to-json-schema": "^3.25.1" }, "peerDependencies": { "@cfworker/json-schema": "^4.1.1" }, "optionalPeers": ["@cfworker/json-schema"] }, "sha512-2DdE+SJDtzLEEWzY1ZjY7Q+VcPhcV1KisD3zI4u0XZyktsjHum1mwbMI+JaulUBi2OZk+KJAi2uPXzxichPkdw=="],
 
-    "@moonsjs/cli": ["@moonsjs/cli@0.3.0", "", { "dependencies": { "@moonsjs/core": "^0.3.0", "@moonsjs/vite": "^0.3.0", "vite": "^8.3.4" }, "bin": { "moons": "dist/cli.js" } }, "sha512-TyZq0RMt/B3i+a2BXYLDZHvwmoRcYcjTbLHFytofj9WsddqNBHu9DidbNGJakAr0GHIkUzH/WFyUrfofvltskQ=="],
+    "@moonsjs/cli": ["@moonsjs/cli@0.4.0", "", { "dependencies": { "@moonsjs/core": "^0.4.0", "@moonsjs/vite": "^0.4.0", "vite": "^8.3.4" }, "bin": { "moons": "dist/cli.js" } }, "sha512-0Px0FAFjK0JZ6oUK9IhmH6+qmEAazVap1gminCMPhTs5vvrhM/wCa7XyHEu3daPuOa3zuyRhb3NI9ttyrrCxAA=="],
 
-    "@moonsjs/core": ["@moonsjs/core@0.3.0", "", { "dependencies": { "devalue": "^6.0.3" } }, "sha512-X7RxbwMdlawEl+q8HfptsXS+hRzZbQeTuunsJ7C7xQpRHE827+9wcb17ZJ0S/eNgZ2iSFFmA4dELz7kvavR0/g=="],
+    "@moonsjs/core": ["@moonsjs/core@0.4.0", "", { "dependencies": { "devalue": "^6.0.3" } }, "sha512-s5zd6qNwhVltoS77GFduZVmLThvCEUu9cWuaqBXVunKq8N9HI1lTQ7KwKNuOoZ6cS6yDAa6FdH8c55m3t0486A=="],
 
-    "@moonsjs/react": ["@moonsjs/react@0.3.0", "", { "dependencies": { "@moonsjs/core": "^0.3.0" }, "peerDependencies": { "react": "^19.3.0", "react-dom": "^19.3.0" } }, "sha512-SYW4j87x75XPrgIA1b5CoAfV7xN/wJL+JVDyekdjr0w5uyoDgROgHRNhq3IMUTJmvHg8YcckK6Papqdsl02Wow=="],
+    "@moonsjs/react": ["@moonsjs/react@0.4.0", "", { "dependencies": { "@moonsjs/core": "^0.4.0" }, "peerDependencies": { "react": "^19.3.0", "react-dom": "^19.3.0" } }, "sha512-oW26UouXWORyaxNwt8VK21avVws5nOxPSW+Bjc4kZuuqKPS+LnVWFuvegNJPj6gYsGABBJZW9qsPkJ9iUpmasg=="],
 
-    "@moonsjs/server": ["@moonsjs/server@0.3.0", "", { "dependencies": { "@moonsjs/core": "^0.3.0", "@standard-schema/spec": "^1.1.0", "devalue": "^6.0.3" } }, "sha512-lo13wUxwipE7GiohyuG1bxT9QvE3ZcSZv5CmCEoayQJZcpIrLMHfn810K8s8655gIUvn72IM60gbSfEHGIKbaw=="],
+    "@moonsjs/server": ["@moonsjs/server@0.4.0", "", { "dependencies": { "@moonsjs/core": "^0.4.0", "@standard-schema/spec": "^1.1.0", "devalue": "^6.0.3" } }, "sha512-OikapOGVQ5NLJTDuXCB/En5UbOH5mU+fnla9ACwj+IXfg+tREnhL60Vd6l/vxxoINT4WsRe/mtcEycoYrP4kjA=="],
 
-    "@moonsjs/vite": ["@moonsjs/vite@0.3.0", "", { "dependencies": { "@babel/parser": "^8.0.7", "@moonsjs/core": "^0.3.0", "@moonsjs/react": "^0.3.0", "@moonsjs/server": "^0.3.0" }, "peerDependencies": { "vite": "^8.3.4" } }, "sha512-JytgzGRSFZX/+g9Veun+IMoQ5GQVNhuym3m/Kse4FO1UeLNM5pjVht4tJAjvNPpq5ejwGprjxwVUsS2IuBs72g=="],
+    "@moonsjs/vite": ["@moonsjs/vite@0.4.0", "", { "dependencies": { "@babel/parser": "^8.0.7", "@moonsjs/core": "^0.4.0", "@moonsjs/react": "^0.4.0", "@moonsjs/server": "^0.4.0" }, "peerDependencies": { "vite": "^8.3.4" } }, "sha512-/9uQr3wtlbVSOEaLqOXZ0ol/VQYj1/UEyim9ug5B53x5LjU2RJ8CMUJPccbysGGh47svUWm+DX4E56r9r+cGXg=="],
 
     "@oxc-project/types": ["@oxc-project/types@0.154.0", "", {}, "sha512-KYOUGQFlLWR+s4QMV2Q9ko38TZm7EdO87Qm7rvZLqk/webse/cDjtyxKhg/47l0byCbs/k46LT8qc4PKjAikzA=="],
 
