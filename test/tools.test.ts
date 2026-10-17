@@ -10,10 +10,10 @@ import { createTools, localContextPath, searchMarkdown, CONTEXT_URLS } from "../
 // Fixture mandiri di dalam repo (bukan paths monorepo) — repo paket berdiri sendiri.
 const fixtures = join(import.meta.dir, "fixtures");
 
-test("CONTEXT_URLS: situs docs dulu, lalu pages.dev, lalu GitHub raw (mirror)", () => {
-  expect(CONTEXT_URLS[0]).toContain("docs.devmoon.net");
-  expect(CONTEXT_URLS[1]).toContain("moonsjs-docs.pages.dev");
-  expect(CONTEXT_URLS[2]).toContain("raw.githubusercontent.com/moonsjs/docs");
+test("CONTEXT_URLS: situs docs dulu, lalu GitHub raw (mirror)", () => {
+  expect(CONTEXT_URLS).toHaveLength(2);
+  expect(CONTEXT_URLS[0]).toContain("docs.devmoon.net/raw/ai/CONTEXT.md");
+  expect(CONTEXT_URLS[1]).toContain("raw.githubusercontent.com/moonsjs/docs");
 });
 
 test("localContextPath: menghitung docs/ai dari entry paket @moonsjs/cli", () => {

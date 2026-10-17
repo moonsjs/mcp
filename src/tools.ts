@@ -20,12 +20,19 @@ export type ContextFetcher = () => Promise<string>;
  export const CONTEXT_URL =
   "https://raw.githubusercontent.com/moonsjs/docs/main/ai/CONTEXT.md";
 
-/** Rantai fallback remote: situs docs → pages.dev → GitHub raw (repo docs). */
+/** Rantai fallback remote: situs docs → GitHub raw (repo docs). */
 export const CONTEXT_URLS: readonly string[] = [
   "https://docs.devmoon.net/raw/ai/CONTEXT.md",
-  "https://moonsjs-docs.pages.dev/raw/ai/CONTEXT.md",
   CONTEXT_URL,
 ];
+
+/**
+ * Accept only the Markdown context. A redirect or an error page can return
+ * HTTP 200 with HTML; that must not become the context an agent searches.
+ */
+function isContextMarkdown(text: string): boolean {
+  return /^#\s+Moons\b/.test(text.trimStart());
+}
 
 /** Path konteks offline di paket `@moonsjs/cli`, dari entry yang di-resolve. */
 export function localContextPath(cliEntry: string): string {
@@ -37,7 +44,10 @@ function readLocalContext(): { source: string; text: string } | null {
     const entry = createRequire(import.meta.url).resolve("@moonsjs/cli");
     const path = localContextPath(entry);
     if (existsSync(path)) {
-      return { source: `local:${path}`, text: readFileSync(path, "utf8") };
+      const text = readFileSync(path, "utf8");
+      if (isContextMarkdown(text)) {
+        return { source: `local:${path}`, text };
+      }
     }
   } catch {
     // fallthrough ke remote
@@ -57,7 +67,11 @@ async function defaultLoadContext(): Promise<{ source: string; text: string }> {
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
-      return { source: url, text: await response.text() };
+      const text = await response.text();
+      if (!isContextMarkdown(text)) {
+        throw new Error(`unexpected context payload (not Markdown) from ${url}`);
+      }
+      return { source: url, text };
     } catch (error) {
       lastError = error;
     }
