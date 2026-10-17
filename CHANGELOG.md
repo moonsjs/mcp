@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.5 — 2026-10-17
+- chore: wave alignment (deps ^0.6.0)
+
 ## v0.2.4 — 2026-10-17
 - chore: wave alignment (deps ^0.5.0)
 
