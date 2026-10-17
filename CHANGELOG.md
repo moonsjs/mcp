@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.1 — 2026-10-17
+- fix: the MCP handshake version reads the package version (was hardcoded 0.1.0)
+
 All notable changes to this package. Entries mirror commit subjects;
 releases are tagged `vX.Y.Z` in the package repository.
 

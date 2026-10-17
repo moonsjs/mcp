@@ -1,4 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { MCP_VERSION } from "./version";
 import { z } from "zod";
 import { createTools, type ToolsetOptions } from "./tools";
 
@@ -26,7 +27,7 @@ async function guard(
 /** Bangun MCP server `moons` (stdio) untuk satu project (Addendum A.7). */
 export function createMcpServer(options: ToolsetOptions): McpServer {
   const tools = createTools(options);
-  const server = new McpServer({ name: "moons", version: "0.1.0" });
+  const server = new McpServer({ name: "moons", version: MCP_VERSION });
 
   server.registerTool(
     "list_routes",
