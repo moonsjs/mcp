@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.6 — 2026-10-17
+- chore: cli range ^0.7.0
+
 ## v0.2.5 — 2026-10-17
 - chore: wave alignment (deps ^0.6.0)
 
